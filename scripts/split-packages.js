@@ -55,9 +55,12 @@ function createDistributionCommit(packageInfo, distributionShaByName) {
 
   try {
     git(["worktree", "add", "--detach", temporaryWorktree, baseCommit]);
-    const changed = rewriteInternalDependencies(temporaryWorktree, distributionShaByName);
-    if (changed) {
-      git(["add", "package.json"], { cwd: temporaryWorktree });
+    const manifestChanged = rewriteInternalDependencies(temporaryWorktree, distributionShaByName);
+    const lockfilePath = path.join(temporaryWorktree, "package-lock.json");
+    const lockfileRemoved = fs.existsSync(lockfilePath);
+    if (lockfileRemoved) fs.rmSync(lockfilePath);
+    if (manifestChanged || lockfileRemoved) {
+      git(["add", "--all"], { cwd: temporaryWorktree });
       git(["commit", "-m", `chore: prepare ${packageInfo.name} distribution`], {
         cwd: temporaryWorktree,
       });

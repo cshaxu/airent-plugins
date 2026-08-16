@@ -1,0 +1,51 @@
+{
+  "name": "@airent/api-express",
+  "version": "0.0.0",
+  "description": "Express.js Extension for Airent API 0.0.0",
+  "main": "./lib/index.js",
+  "bin": {
+    "airent-api-express": "./bin/index.js"
+  },
+  "scripts": {
+    "build": "rm -rf ./lib && tsc -p tsconfig.json",
+    "test": "rm -rf ./test-project/api-types && rm -rf ./test-project/entities && rm -rf ./test-project/generated && rm -rf ./test-project/services && rm -rf ./test-project/routes.ts && airent"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cshaxu/airent-api-express-js.git"
+  },
+  "keywords": [
+    "api",
+    "backend",
+    "data",
+    "entity",
+    "express",
+    "framework"
+  ],
+  "author": "cshaxu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cshaxu/airent-api-express-js/issues"
+  },
+  "homepage": "https://github.com/cshaxu/airent-api-express-js#readme",
+  "files": [
+    "bin",
+    "lib",
+    "resources"
+  ],
+  "dependencies": {
+    "express": "^4.22.1"
+  },
+  "peerDependencies": {
+    "@airent/api": "github:cshaxu/airent-api-js#ee8cea6f134851f3bff4f8b41db04101a765f3b1",
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161"
+  },
+  "devDependencies": {
+    "@airent/api": "github:cshaxu/airent-api-js#ee8cea6f134851f3bff4f8b41db04101a765f3b1",
+    "@types/async-lock": "^1.4.2",
+    "@types/express": "^4.17.25",
+    "@types/node": "^25.5.0",
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161",
+    "typescript": "^5.9.3"
+  }
+}

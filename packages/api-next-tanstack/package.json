@@ -37,7 +37,7 @@
     "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161"
   },
   "peerDependencies": {
-    "@airent/api-next": "github:cshaxu/airent-api-next-js#285af075c8366cb8ba440a8010e8c3191ec83817",
+    "@airent/api-next": "github:cshaxu/airent-plugins-js#54a3c594aa6aa895c141d030cefda42f3936f386",
     "@tanstack/react-query": ">=5",
     "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161"
   },

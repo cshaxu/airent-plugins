@@ -43,12 +43,12 @@
     "zod": "^4.3.6"
   },
   "peerDependencies": {
-    "@airent/api": "file:../api",
+    "@airent/api": "github:cshaxu/airent-plugins#0bc8500bffbf755008572f35e12b23e620fbb44b",
     "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161",
     "react": "^18.2.0 || ^19.0.0"
   },
   "devDependencies": {
-    "@airent/api": "file:../api",
+    "@airent/api": "github:cshaxu/airent-plugins#0bc8500bffbf755008572f35e12b23e620fbb44b",
     "@types/async-lock": "^1.4.2",
     "@types/http-errors": "^2.0.5",
     "@types/node": "^25.5.0",

@@ -1,4 +1,6 @@
-# Airent plugins for JavaScript
+# airent-plugins
+
+Monorepo for all official Airent plugins.
 
 This repository is the source monorepo for the Airent plugins under the
 `@airent` namespace. It is intentionally **not** an npm or GitHub Packages

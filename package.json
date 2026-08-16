@@ -1,0 +1,48 @@
+{
+  "name": "@airent/api-next-tanstack",
+  "version": "0.0.0",
+  "description": "Tanstack Extension for Airent API Next.js 0.0.0",
+  "main": "./lib/index.js",
+  "bin": {
+    "airent-api-next-tanstack": "./bin/index.js"
+  },
+  "scripts": {
+    "build": "crlf --set=LF bin/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rex-Engine/airent-api-next-tanstack-js.git"
+  },
+  "keywords": [
+    "api",
+    "frontend",
+    "data",
+    "entity",
+    "framework",
+    "next",
+    "tanstack",
+    "pojo",
+    "presentation"
+  ],
+  "author": "Xu Ha",
+  "bugs": {
+    "url": "https://github.com/Rex-Engine/airent-api-next-tanstack-js/issues"
+  },
+  "homepage": "https://github.com/Rex-Engine/airent-api-next-tanstack-js#readme",
+  "files": [
+    "bin",
+    "resources"
+  ],
+  "dependencies": {
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161"
+  },
+  "peerDependencies": {
+    "@airent/api-next": "github:cshaxu/airent-api-next-js#285af075c8366cb8ba440a8010e8c3191ec83817",
+    "@tanstack/react-query": ">=5",
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161"
+  },
+  "devDependencies": {
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161",
+    "crlf": "^1.1.1"
+  }
+}

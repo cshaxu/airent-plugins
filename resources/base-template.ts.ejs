@@ -1,0 +1,208 @@
+<%
+function getKeysName() {
+  return `${utils.toPascalCase(entity.name)}Keys`;
+}
+
+function getPluralizedTitleCasedEntityName() {
+  return utils.pluralize(utils.toPascalCase(entity.name));
+}
+
+function buildSearchOrGetManyQueryOptionsLines(isSearch) {
+  const fnType = isSearch ? 'SearchFn' : 'GetManyFn';
+  const fnVar = isSearch ? 'searchFn' : 'getManyFn';
+  const queryType = isSearch ? entity._strings.api.searchQuery : entity._strings.api.getManyQuery;
+  return [
+    `type ${fnType}<S extends ${entity._strings.fieldRequestClass}> = (`,
+    `  query: ${queryType},`,
+    '  fieldRequest: S,',
+    '  ...extras: any[]',
+    `) => Promise<${entity._strings.api.manyResponse}<S>>;`,
+    '',
+    `export function build${isSearch ? 'Search' : 'GetMany'}${getPluralizedTitleCasedEntityName()}QueryWith<`,
+    `  F extends ${fnType}<S>,`,
+    `  S extends ${entity._strings.fieldRequestClass},`,
+    `>(${fnVar}: F, fieldRequest: S) {`,
+    '  return (',
+    `    query: ${queryType},`,
+    '    ...extras: Parameters<F> extends [any, any, ...infer Rest] ? Rest : never',
+    '  ) => queryOptions({',
+    `    queryKey: ${getKeysName()}.${isSearch ? 'search' : 'getMany'}(query),`,
+    `    queryFn: () => ${fnVar}(query, fieldRequest, ...extras).then((page) => page.${utils.toCamelCase(utils.pluralize(entity.name))}),`,
+    '    enabled: isEnabled(query),',
+    '  });',
+    '}',
+  ];
+}
+
+function buildGetManyPageQueryOptionsLines(field, isAscending) {
+  if (isAscending && !field._strings.api.maxVar) {
+    return [];
+  }
+  if (!isAscending && !field._strings.api.minVar) {
+    return [];
+  }
+  return [
+    `export function buildGetManyPageBy${utils.toPascalCase(field.name)}${isAscending ? 'Asc' : 'Desc'}QueryWith<`,
+    `  F extends GetManyFn<S>,`,
+    `  S extends ${entity._strings.fieldRequestClass},`,
+    '>(getManyFn: F, fieldRequest: S) {',
+    '  return (',
+    `    query: ${entity._strings.api.getManyQuery},`,
+    '    ...extras: Parameters<F> extends [any, any, ...infer Rest] ? Rest : never',
+    '  ) => infiniteQueryOptions({',
+    `    queryKey: ${getKeysName()}.getMany(query),`,
+    `    queryFn: ({ pageParam }: QueryFunctionContext<QueryKey, ${field.type} | null>) =>`,
+    '      getManyFn(',
+    `        { ...query, ...(pageParam !== null && { ${field.name}${isAscending ? 'After' : 'Before'}: pageParam }) },`,
+    '        fieldRequest,',
+    '        ...extras',
+    '      ),',
+    `    initialPageParam: null as ${field.type} | null,`,
+    `    getNextPageParam: (lastPage: ${entity._strings.api.manyResponse}<S>) =>`,
+    `      lastPage?.cursor.count ? lastPage.cursor.${isAscending ? field._strings.api.maxVar : field._strings.api.minVar} : null,`,
+    '    enabled: isEnabled(query),',
+    `    meta: { errorMessage: '[ERROR] Failed to load ${getPluralizedTitleCasedEntityName()} by ${field.name} in ${isAscending ? 'ascending' : 'descending'} order.' },`,
+    '    retry: 1,',
+    '  });',
+    '}',
+  ];
+}
+
+function buildGetOneQueryOptionsLines(isSafe) {
+  const fnType = isSafe ? 'GetOneSafeFn' : 'GetOneFn';
+  const fnVar = isSafe ? 'getOneSafeFn' : 'getOneFn';
+  return [
+    `type ${fnType}<S extends ${entity._strings.fieldRequestClass}> = (`,
+    `  params: ${entity._strings.api.getOneParams},`,
+    '  fieldRequest: S,',
+    '  ...extras: any[]',
+    `) => Promise<${entity._strings.api.oneResponse}<S${isSafe ? ', true' : ''}>>;`,
+    '',
+    `export function buildGetOne${utils.toPascalCase(entity.name)}${isSafe ? 'Safe' : ''}QueryWith<`,
+    `  F extends ${fnType}<S>,`,
+    `  S extends ${entity._strings.fieldRequestClass},`,
+    `>(${fnVar}: F, fieldRequest: S) {`,
+    '  return (',
+    `    params: ${entity._strings.api.getOneParams},`,
+    '    ...extras: Parameters<F> extends [any, any, ...infer Rest] ? Rest : never',
+    '  ) => queryOptions({',
+    `    queryKey: ${getKeysName()}.getOne(params),`,
+    `    queryFn: () => ${fnVar}(params, fieldRequest, ...extras).then((page) => page.${utils.toCamelCase(entity.name)}),`,
+    '    enabled: isEnabled(params),',
+    '  });',
+    '}',
+  ];
+}
+-%>
+<% if (entity._booleans.api.hasAny) { -%>
+  <%_ if (entity._booleans.api.hasSearch || entity._booleans.api.hasGetMany || entity._booleans.api.hasGetOne || entity._booleans.api.hasGetOneSafe) { -%>
+// library imports
+import {
+    <%_ if (entity._booleans.api.hasGetMany) { -%>
+  QueryFunctionContext,
+  QueryKey,
+  infiniteQueryOptions,
+    <%_ } -%>
+  queryOptions,
+} from '@tanstack/react-query';
+
+// entity imports
+import {
+  <%= entity._strings.fieldRequestClass %>,
+    <%_ if (entity._booleans.api.hasSearch || entity._booleans.api.hasGetMany) { -%>
+  <%= entity._strings.api.manyResponse %>,
+    <%_ } -%>
+    <%_ if (entity._booleans.api.hasGetOne || entity._booleans.api.hasGetOneSafe) { -%>
+  <%= entity._strings.api.oneResponse %>,
+    <%_ } -%>
+} from '<%= entity._packages.apiNextTanstack.hookToTypeFull %>';
+  <%_ } -%>
+import {
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+  <%= entity._strings.api.searchQuery %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  <%= entity._strings.api.getManyQuery %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOneRequest) { -%>
+  <%= entity._strings.api.getOneParams %>,
+  <%_ } -%>
+} from '<%= entity._packages.apiNextTanstack.hookToRequestFull %>';
+
+export const <%= getKeysName() %> = {
+  all: () => ['<%= utils.pluralize(utils.toCamelCase(entity.name)) %>'],
+  searchAll: () => [...<%= getKeysName() %>.all(), 'search'],
+  getManyAll: () => [...<%= getKeysName() %>.all(), 'getMany'],
+  getOneAll: () => [...<%= getKeysName() %>.all(), 'getOne'],
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+  search: (query: <%= entity._strings.api.searchQuery %>) => [...<%= getKeysName() %>.searchAll(), query],
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  getMany: (query: <%= entity._strings.api.getManyQuery %>) => [...<%= getKeysName() %>.getManyAll(), query],
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOneRequest) { -%>
+  getOne: (params: <%= entity._strings.api.getOneParams %>) => [...<%= getKeysName() %>.getOneAll(), params],
+  <%_ } -%>
+};
+  <%_ if (entity._booleans.api.hasSearch || entity._booleans.api.hasGetMany || entity._booleans.api.hasGetOne || entity._booleans.api.hasGetOneSafe) { -%>
+
+const isEnabled = (object: object) =>
+  Object.values(object).every((value) => value !== undefined);
+    <%_ if (entity._booleans.api.hasSearch) { -%>
+
+      <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+      <%_ } -%>
+      <%_ buildSearchOrGetManyQueryOptionsLines(true).forEach((line) => { -%>
+<%- line %>
+      <%_ }); -%>
+    <%_ } -%>
+    <%_ if (entity._booleans.api.hasGetMany) { -%>
+
+      <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+      <%_ } -%>
+      <%_ buildSearchOrGetManyQueryOptionsLines(false).forEach((line) => { -%>
+<%- line %>
+      <%_ }); -%>
+      <%_ entity.fields.filter((f) => f._strings.api.minVar || f._strings.api.maxVar).forEach((field) => { -%>
+        <%_ if (field._strings.api.maxVar) { -%>
+
+          <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+          <%_ } -%>
+          <%_ buildGetManyPageQueryOptionsLines(field, true).forEach((line) => { -%>
+<%- line %>
+          <%_ }); -%>
+        <%_ } -%>
+        <%_ if (field._strings.api.minVar) { -%>
+
+          <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+          <%_ } -%>
+          <%_ buildGetManyPageQueryOptionsLines(field, false).forEach((line) => { -%>
+<%- line %>
+          <%_ }); -%>
+        <%_ } -%>
+      <%_ }); -%>
+    <%_ } -%>
+    <%_ if (entity._booleans.api.hasGetOne) { -%>
+
+      <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+      <%_ } -%>
+      <%_ buildGetOneQueryOptionsLines(false).forEach((line) => { -%>
+<%- line %>
+      <%_ }); -%>
+    <%_ } -%>
+    <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
+
+      <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+      <%_ } -%>
+      <%_ buildGetOneQueryOptionsLines(true).forEach((line) => { -%>
+<%- line %>
+      <%_ }); -%>
+    <%_ } -%>
+  <%_ } -%>
+<% } -%>

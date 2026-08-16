@@ -1,0 +1,67 @@
+<%
+function getPluralizedTitleCasedEntityName() {
+  return utils.pluralize(utils.toPascalCase(entity.name));
+}
+
+function getSearchFieldRequestName() {
+  return `Search${getPluralizedTitleCasedEntityName()}FieldRequest`;
+}
+
+function getGetManyFieldRequestName() {
+  return `GetMany${getPluralizedTitleCasedEntityName()}FieldRequest`;
+}
+
+function getGetOneFieldRequestName() {
+  return `GetOne${utils.toPascalCase(entity.name)}FieldRequest`;
+}
+-%>
+<% if (entity._booleans.api.hasAny) { -%>
+// entity imports
+import {
+  <%= entity._strings.selectedResponseClass %>,
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  <%= entity._strings.api.manyResponse %>,
+  <%_ } -%>
+} from '<%- entity._packages.apiNextTanstack.hookToTypeFull %>';
+import {
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+  <%= getSearchFieldRequestName() %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  <%= getGetManyFieldRequestName() %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOne || entity._booleans.api.hasGetOneSafe || entity._booleans.api.hasCreateOne || entity._booleans.api.hasUpdateOne) { -%>
+  <%= getGetOneFieldRequestName() %>,
+  <%_ } -%>
+} from '<%- config._packages.apiNextTanstack.fieldRequestsImportPath %>';
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+
+    <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+    <%_ } -%>
+export type <%= `Search${entity._strings.selectedResponseClass}` %> =
+  <%= entity._strings.selectedResponseClass %><typeof <%= getSearchFieldRequestName() %>>;
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+
+    <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+    <%_ } -%>
+export type <%= `GetMany${entity._strings.selectedResponseClass}` %> =
+  <%= entity._strings.selectedResponseClass %><typeof <%= getGetManyFieldRequestName() %>>;
+
+    <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+    <%_ } -%>
+export type <%= `Selected${entity._strings.api.manyResponse}` %> =
+  <%= entity._strings.api.manyResponse %><typeof <%= getGetManyFieldRequestName() %>>;
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOne || entity._booleans.api.hasGetOneSafe || entity._booleans.api.hasCreateOne || entity._booleans.api.hasUpdateOne) { -%>
+
+    <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+    <%_ } -%>
+export type <%= `GetOne${entity._strings.selectedResponseClass}` %> =
+  <%= entity._strings.selectedResponseClass %><typeof <%= getGetOneFieldRequestName() %>>;
+  <%_ } -%>
+<% } -%>

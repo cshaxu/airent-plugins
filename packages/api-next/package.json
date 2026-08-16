@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "rm -rf ./lib && tsc -p tsconfig.json && crlf --set=LF bin/*",
+    "prepare": "npm run build",
     "test": "rm -rf ./test-project/src/api-types && rm -rf ./test-project/src/app && rm -rf ./test-project/src/entities && rm -rf ./test-project/src/generated && rm -rf ./test-project/src/services && airent && node ./bin/index.js generate"
   },
   "repository": {
@@ -42,12 +43,12 @@
     "zod": "^4.3.6"
   },
   "peerDependencies": {
-    "@airent/api": "github:cshaxu/airent-plugins-js#587424510e486dfdc1689837ae508481db0140b7",
+    "@airent/api": "file:../api",
     "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161",
     "react": "^18.2.0 || ^19.0.0"
   },
   "devDependencies": {
-    "@airent/api": "github:cshaxu/airent-plugins-js#587424510e486dfdc1689837ae508481db0140b7",
+    "@airent/api": "file:../api",
     "@types/async-lock": "^1.4.2",
     "@types/http-errors": "^2.0.5",
     "@types/node": "^25.5.0",

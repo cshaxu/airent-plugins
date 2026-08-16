@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'packages/**'
+      - 'scripts/split-packages.js'
       - '.github/workflows/split-packages.yml'
   workflow_dispatch:
 
@@ -20,16 +21,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create package-root branches
-        shell: bash
+      - name: Configure Git author
         run: |
-          set -euo pipefail
-          packages=(api api-express api-next api-next-tanstack imdb prisma)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          for package in "${packages[@]}"; do
-            branch="split/${package}"
-            commit="$(git subtree split --prefix="packages/${package}")"
-            git branch -f "${branch}" "${commit}"
-            git push origin "${branch}" --force
-            echo "${package}: ${commit}"
-          done
+      - name: Create distributable package branches
+        run: node ./scripts/split-packages.js

@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "rm -rf ./lib && tsc -p tsconfig.json && crlf --set=LF bin/*",
+    "prepare": "npm run build",
     "test": "rm -rf ./test-project/schemas/generated && rm -rf ./test-project/src/generated && rm -rf ./test-project/src/entities && node ./bin/index.js generate && airent"
   },
   "repository": {

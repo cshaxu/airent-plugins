@@ -10,6 +10,7 @@
     "test": "npm run test --workspaces --if-present",
     "split:dry-run": "node ./scripts/split-packages.js --dry-run",
     "update:airent": "node ./scripts/update-airent-js.js",
-    "update:airent:dry-run": "node ./scripts/update-airent-js.js --dry-run"
+    "update:airent:dry-run": "node ./scripts/update-airent-js.js --dry-run",
+    "wait:split": "node ./scripts/wait-for-split-packages.js"
   }
 }

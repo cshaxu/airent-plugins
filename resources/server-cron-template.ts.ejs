@@ -1,0 +1,28 @@
+// airent imports
+import { dispatchWith } from '@airent/api';
+import { handleWith } from '<%- packages.toApiNextLibFull %>';
+
+// config imports
+import { Context } from '<%- packages.toContextFull %>';
+import { dispatcherConfig } from '<%- packages.toDispatcherConfigFull %>';
+import { handlerConfig } from '<%- packages.toHandlerConfigFull %>';
+
+// function imports
+import { executor } from '<%- entry.parsed.sourcePackage %>';
+
+export const dynamic = 'force-dynamic';
+
+<% if (entry.parsed.maxDuration) { -%>
+export const maxDuration = <%= entry.parsed.maxDuration %>;
+<% } -%>
+
+const dispatcher = dispatchWith({
+  ...dispatcherConfig,
+  parser: () => Promise.resolve({}),
+  executor: (_parsed: {}, context: Context) => executor(context),
+<% if (config.apiNext.cronHandlerOptions?.length) { -%>
+  options: <%- config.apiNext.cronHandlerOptions %>,
+<% } -%>
+});
+
+export const GET = handleWith(dispatcher, handlerConfig);

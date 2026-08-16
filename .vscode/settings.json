@@ -1,0 +1,43 @@
+{
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "editor.folding": true,
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always"
+  },
+  "eslint.useFlatConfig": true,
+  "files.insertFinalNewline": true,
+  "prettier.endOfLine": "auto",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+  "files.associations": {
+    "*.ejs": "html"
+  },
+  "emmet.includeLanguages": {
+    "ejs": "html"
+  },
+  "editor.inlineSuggest.enabled": true,
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": true,
+    "markdown": true,
+    "scminput": false
+  },
+  "diffEditor.ignoreTrimWhitespace": false,
+  "terminal.integrated.defaultProfile.osx": "bash",
+  "prisma.pinToPrisma6": false
+}

@@ -1,0 +1,46 @@
+name: User
+deprecated: true
+api:
+  cursors:
+    - createdAt: asc
+    - createdAt: desc
+  methods:
+    search: "{ requireLogin: false }"
+    getMany: "{ requireAdmin: true }"
+    getOne: "{ requireLogin: false }"
+    getOneSafe: "{ requireLogin: false }"
+    createOne: "{ requireLogin: false }"
+    updateOne: "{ requireLogin: true }"
+    deleteOne: "{ requireLogin: true }"
+model: UserModel
+types:
+  - name: UserModel
+    define: "{ id: string; createdAt: Date; name: string; email: string }"
+policies:
+  Private:
+    - email
+fields:
+  - id: 1
+    name: id
+    type: string
+    strategy: primitive
+  - id: 2
+    name: createdAt
+    type: Date
+    strategy: primitive
+  - id: 2
+    name: name
+    type: string
+    strategy: primitive
+  - id: 3
+    name: email
+    type: string
+    strategy: primitive
+  - id: 4
+    name: messages
+    type: Message[]
+    strategy: association
+    sourceKeys:
+      - id
+    targetKeys:
+      - userId

@@ -1,0 +1,302 @@
+<%
+const fs = process.mainModule.require('fs');
+const path = process.mainModule.require('path');
+
+function normalizePath(inputPath) {
+  return String(inputPath).replace(/\\/g, '/').replace(/^\.\//, '');
+}
+
+function splitPath(inputPath) {
+  return normalizePath(inputPath).split('/').filter(Boolean);
+}
+
+function toRelativeImport(fromDir, toPath) {
+  const fromParts = splitPath(fromDir);
+  const toParts = splitPath(toPath);
+  while (fromParts.length > 0 && toParts.length > 0 && fromParts[0] === toParts[0]) {
+    fromParts.shift();
+    toParts.shift();
+  }
+  const segments = [...fromParts.map(() => '..'), ...toParts];
+  const result = segments.join('/');
+  return result.startsWith('.') ? result : `./${result}`;
+}
+
+function buildLibImportPath() {
+  const libImportPath = config.apiNext?.libImportPath;
+  if (!libImportPath || !libImportPath.startsWith('.')) {
+    return libImportPath || '@airent/api-next';
+  }
+  return toRelativeImport(config.generatedPath, libImportPath);
+}
+
+function getTypeScriptFileNames(inputPath) {
+  const absolutePath = path.join(process.cwd(), inputPath);
+  if (!fs.existsSync(absolutePath)) {
+    return [];
+  }
+  return fs.readdirSync(absolutePath)
+    .filter((name) => name.endsWith('.ts'))
+    .map((name) => name.replace(/\.ts$/, ''))
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function buildImportPath(inputPath, name) {
+  return toRelativeImport(config.generatedPath, `${inputPath}/${name}`);
+}
+
+function toKebabPlural(inputPath) {
+  return inputPath
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .toLowerCase();
+}
+
+const libImportPath = buildLibImportPath();
+const debugEntries = config.apiNext?.debugSourcePath ? getTypeScriptFileNames(config.apiNext.debugSourcePath) : [];
+const webhookEntries = config.apiNext?.webhookSourcePath ? getTypeScriptFileNames(config.apiNext.webhookSourcePath) : [];
+const cronEntries = config.apiNext?.cronSourcePath ? getTypeScriptFileNames(config.apiNext.cronSourcePath) : [];
+const apiEntities = Object.values(entityMap)
+  .filter((entity) => entity.api)
+  .sort((a, b) => a.name.localeCompare(b.name));
+-%>
+import {
+  buildAirentApiNextStudioCatalog,
+} from '<%= libImportPath %>';
+import AirentApiNextStudioView from '@airent/api-next/studio-view';
+<%_ apiEntities.forEach((entity) => { -%>
+<%
+const importedNames = [
+  entity._booleans.api.hasSearch ? entity._strings.api.searchQuery : null,
+  entity._booleans.api.hasGetMany ? entity._strings.api.getManyQuery : null,
+  entity._booleans.api.hasGetOneRequest || entity._booleans.api.hasGetOneSafe || entity._booleans.api.hasUpdateOne || entity._booleans.api.hasDeleteOne
+    ? entity._strings.api.getOneParams
+    : null,
+  entity._booleans.api.hasCreateOne ? entity._strings.api.createOneBody : null,
+  entity._booleans.api.hasUpdateOne ? entity._strings.api.updateOneBody : null,
+].filter(Boolean);
+const importPath = toRelativeImport(config.generatedPath, `${config.api.typesPath}/${entity._strings.moduleName}`);
+-%>
+<%_ if (importedNames.length > 0) { -%>
+import {
+  <%_ importedNames.forEach((name) => { -%>
+  <%= name %>,
+  <%_ }); -%>
+} from '<%= importPath %>';
+<%_ } -%>
+<%_ }); -%>
+<%_ debugEntries.forEach((name) => { -%>
+import * as <%= utils.toPascalCase(name) %>DebugEndpoint from '<%= buildImportPath(config.apiNext.debugSourcePath, name) %>';
+<%_ }); -%>
+<%_ webhookEntries.forEach((name) => { -%>
+import * as <%= utils.toPascalCase(name) %>WebhookEndpoint from '<%= buildImportPath(config.apiNext.webhookSourcePath, name) %>';
+<%_ }); -%>
+<%_ cronEntries.forEach((name) => { -%>
+import * as <%= utils.toPascalCase(name) %>CronEndpoint from '<%= buildImportPath(config.apiNext.cronSourcePath, name) %>';
+<%_ }); -%>
+
+const entityEndpoints = [
+<%_ apiEntities.forEach((entity) => { -%>
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+  {
+    id: '<%= entity._strings.moduleName %>.search',
+    label: 'Search <%= entity._strings.api.manyEntsVar %>',
+    entityName: '<%= entity.name %>',
+    operation: 'search',
+    path: '<%= `${config.apiNext.airentApiPath}/search-${toKebabPlural(entity._strings.api.manyEntsVar)}` %>',
+    method: 'POST',
+    querySchema: <%= entity._strings.api.searchQuery %>,
+    fieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+    primitiveFieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).filter(utils.isPrimitiveField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+  },
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  {
+    id: '<%= entity._strings.moduleName %>.getMany',
+    label: 'Get Many <%= entity._strings.api.manyEntsVar %>',
+    entityName: '<%= entity.name %>',
+    operation: 'getMany',
+    path: '<%= `${config.apiNext.airentApiPath}/get-many-${toKebabPlural(entity._strings.api.manyEntsVar)}` %>',
+    method: 'POST',
+    querySchema: <%= entity._strings.api.getManyQuery %>,
+    fieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+    primitiveFieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).filter(utils.isPrimitiveField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+  },
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOne) { -%>
+  {
+    id: '<%= entity._strings.moduleName %>.getOne',
+    label: 'Get One <%= entity.name %>',
+    entityName: '<%= entity.name %>',
+    operation: 'getOne',
+    path: '<%= `${config.apiNext.airentApiPath}/get-one-${entity._strings.moduleName}` %>',
+    method: 'POST',
+    paramsSchema: <%= entity._strings.api.getOneParams %>,
+    fieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+    primitiveFieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).filter(utils.isPrimitiveField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+  },
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
+  {
+    id: '<%= entity._strings.moduleName %>.getOneSafe',
+    label: 'Get One Safe <%= entity.name %>',
+    entityName: '<%= entity.name %>',
+    operation: 'getOneSafe',
+    path: '<%= `${config.apiNext.airentApiPath}/get-one-${entity._strings.moduleName}-safe` %>',
+    method: 'POST',
+    paramsSchema: <%= entity._strings.api.getOneParams %>,
+    fieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+    primitiveFieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).filter(utils.isPrimitiveField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+  },
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
+  {
+    id: '<%= entity._strings.moduleName %>.createOne',
+    label: 'Create One <%= entity.name %>',
+    entityName: '<%= entity.name %>',
+    operation: 'createOne',
+    path: '<%= `${config.apiNext.airentApiPath}/create-one-${entity._strings.moduleName}` %>',
+    method: 'POST',
+    bodySchema: <%= entity._strings.api.createOneBody %>,
+    fieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+    primitiveFieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).filter(utils.isPrimitiveField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+  },
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
+  {
+    id: '<%= entity._strings.moduleName %>.updateOne',
+    label: 'Update One <%= entity.name %>',
+    entityName: '<%= entity.name %>',
+    operation: 'updateOne',
+    path: '<%= `${config.apiNext.airentApiPath}/update-one-${entity._strings.moduleName}` %>',
+    method: 'POST',
+    paramsSchema: <%= entity._strings.api.getOneParams %>,
+    bodySchema: <%= entity._strings.api.updateOneBody %>,
+    fieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+    primitiveFieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).filter(utils.isPrimitiveField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+  },
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasDeleteOne) { -%>
+  {
+    id: '<%= entity._strings.moduleName %>.deleteOne',
+    label: 'Delete One <%= entity.name %>',
+    entityName: '<%= entity.name %>',
+    operation: 'deleteOne',
+    path: '<%= `${config.apiNext.airentApiPath}/delete-one-${entity._strings.moduleName}` %>',
+    method: 'POST',
+    paramsSchema: <%= entity._strings.api.getOneParams %>,
+    fieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+    primitiveFieldRequestFields: [
+      <%_ entity.fields.filter(utils.isPresentableField).filter(utils.isPrimitiveField).forEach((field) => { -%>
+      '<%= field.name %>',
+      <%_ }); -%>
+    ],
+  },
+  <%_ } -%>
+<%_ }); -%>
+] as const;
+
+const debugEndpoints = [
+<%_ debugEntries.forEach((name) => { -%>
+  {
+    id: 'debug.<%= name %>',
+    label: '<%= name %>',
+    path: '<%= `${config.apiNext.debugApiPath}/${name}` %>',
+    method: 'POST',
+    auth: 'internal',
+    bodySchema: <%= utils.toPascalCase(name) %>DebugEndpoint.Params ?? null,
+  },
+<%_ }); -%>
+] as const;
+
+const webhookEndpoints = [
+<%_ webhookEntries.forEach((name) => { -%>
+  {
+    id: 'webhook.<%= name %>',
+    label: '<%= name %>',
+    path: '<%= `${config.apiNext.webhookApiPath}/${name}` %>',
+    method: 'POST',
+    auth: 'headers',
+    bodySchema: <%= utils.toPascalCase(name) %>WebhookEndpoint.Params ?? null,
+    hasCustomAuthorizer: typeof <%= utils.toPascalCase(name) %>WebhookEndpoint.authorizer === 'function',
+  },
+<%_ }); -%>
+] as const;
+
+const cronEndpoints = [
+<%_ cronEntries.forEach((name) => { -%>
+  {
+    id: 'cron.<%= name %>',
+    label: '<%= name %>',
+    path: '<%= `${config.apiNext.cronApiPath}/${name}` %>',
+    method: 'GET',
+    auth: 'cron',
+    schedule: <%= utils.toPascalCase(name) %>CronEndpoint.schedule ?? null,
+    maxDuration: <%= utils.toPascalCase(name) %>CronEndpoint.maxDuration ?? null,
+  },
+<%_ }); -%>
+] as const;
+
+const groups = buildAirentApiNextStudioCatalog({
+  entities: entityEndpoints,
+  debug: debugEndpoints,
+  webhook: webhookEndpoints,
+  cron: cronEndpoints,
+});
+
+export function AirentApiNextStudio() {
+  return <AirentApiNextStudioView groups={groups} />;
+}
+
+export default AirentApiNextStudio;

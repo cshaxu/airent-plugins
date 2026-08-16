@@ -1,0 +1,64 @@
+{
+  "name": "@airent/api-next",
+  "version": "0.0.0",
+  "description": "Next.js Extension for Airent API 0.0.0",
+  "main": "./lib/index.js",
+  "bin": {
+    "airent-api-next": "./bin/index.js"
+  },
+  "scripts": {
+    "build": "rm -rf ./lib && tsc -p tsconfig.json && crlf --set=LF bin/*",
+    "test": "rm -rf ./test-project/src/api-types && rm -rf ./test-project/src/app && rm -rf ./test-project/src/entities && rm -rf ./test-project/src/generated && rm -rf ./test-project/src/services && airent && node ./bin/index.js generate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cshaxu/airent-api-next-js.git"
+  },
+  "keywords": [
+    "api",
+    "backend",
+    "data",
+    "entity",
+    "framework",
+    "next",
+    "orm",
+    "pojo",
+    "presentation"
+  ],
+  "author": "cshaxu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cshaxu/airent-api-next-js/issues"
+  },
+  "homepage": "https://github.com/cshaxu/airent-api-next-js#readme",
+  "files": [
+    "bin",
+    "lib",
+    "resources"
+  ],
+  "dependencies": {
+    "ejs": "^5.0.1",
+    "http-errors": "^2.0.0",
+    "zod": "^4.3.6"
+  },
+  "peerDependencies": {
+    "@airent/api": "github:cshaxu/airent-api-js#ee8cea6f134851f3bff4f8b41db04101a765f3b1",
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161",
+    "react": "^18.2.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@airent/api": "github:cshaxu/airent-api-js#ee8cea6f134851f3bff4f8b41db04101a765f3b1",
+    "@types/async-lock": "^1.4.2",
+    "@types/http-errors": "^2.0.5",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.0",
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161",
+    "crlf": "^1.1.1",
+    "react": "^19.2.0",
+    "typescript": "^5.9.3"
+  },
+  "exports": {
+    ".": "./lib/index.js",
+    "./studio-view": "./lib/studio-view.js"
+  }
+}

@@ -1,0 +1,6 @@
+<% if (entity.api && entity._booleans.api.hasSearch) { -%>
+// entity imports
+import <%= `${utils.toPascalCase(entity.name)}Handler` %> from '<%- entity._packages.apiNext.routeToHandlerFull %>';
+
+export const POST = <%= `${utils.toPascalCase(entity.name)}Handler` %>.search;
+<% } -%>

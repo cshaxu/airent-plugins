@@ -1,0 +1,207 @@
+<%
+function getCamelCasedEntitiesName() {
+  return utils.pluralize(utils.toCamelCase(entity.name));
+}
+-%>
+<% if (entity._booleans.api.hasAny) { -%>
+// library imports
+import { unstable_cache } from 'next/cache';
+
+// airent imports
+import { NextCacheOptions, toDecoded, toResult } from '<%- config._packages.apiNext.serverClientToLibFull %>';
+
+// config imports
+import { Context } from '<%- config._packages.apiNext.serverClientToContextFull %>';
+
+// entity imports
+import {
+  <%= entity._strings.fieldRequestClass %>,
+  <%_ if (entity._booleans.api.hasSearch || entity._booleans.api.hasGetMany) { -%>
+  <%= entity._strings.api.manyResponse %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOneRequest || entity._booleans.api.hasCreateOne) { -%>
+  <%= entity._strings.api.oneResponse %>,
+  <%_ } -%>
+} from '<%- entity._packages.apiNext.serverClientToTypeFull %>';
+import <%= entity._strings.api.dispatcherClass %> from '<%- entity._packages.apiNext.serverClientToDispatcherFull %>';
+import {
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+  <%= entity._strings.api.searchQuery %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  <%= entity._strings.api.getManyQuery %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOneRequest) { -%>
+  <%= entity._strings.api.getOneParams %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
+  <%= entity._strings.api.createOneBody %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
+  <%= entity._strings.api.updateOneBody %>,
+  <%_ } -%>
+} from '<%- entity._packages.apiNext.serverClientToRequestFull %>';
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+
+async function search<S extends <%= entity._strings.fieldRequestClass %>>(
+  query: <%= entity._strings.api.searchQuery %>,
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
+): Promise<<%= entity._strings.api.manyResponse %><S>> {
+  const data = { query: toDecoded(query), fieldRequest };
+  const cacheKey = [
+    '<%= utils.pluralize(utils.toCamelCase(entity.name)) %>',
+    'search',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity._strings.api.dispatcherClass %>.search(data, context).then(toResult);
+  return await unstable_cache(callback, cacheKey, options)();
+}
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+
+async function getMany<S extends <%= entity._strings.fieldRequestClass %>>(
+  query: <%= entity._strings.api.getManyQuery %>,
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
+): Promise<<%= entity._strings.api.manyResponse %><S>> {
+  const data = { query: toDecoded(query), fieldRequest };
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'getMany',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity._strings.api.dispatcherClass %>.getMany(data, context).then(toResult);
+  return await unstable_cache(callback, cacheKey, options)();
+}
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOne) { -%>
+
+async function getOne<S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
+): Promise<<%= entity._strings.api.oneResponse %><S>> {
+  const data = { params: toDecoded(params), fieldRequest };
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'getOne',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity._strings.api.dispatcherClass %>.getOne(data, context).then(toResult);
+  return await unstable_cache(callback, cacheKey, options)();
+}
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
+
+async function getOneSafe<S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
+): Promise<<%= entity._strings.api.oneResponse %><S, true>> {
+  const data = { params: toDecoded(params), fieldRequest };
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'getOneSafe',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity._strings.api.dispatcherClass %>.getOneSafe(data, context).then(toResult);
+  return await unstable_cache(callback, cacheKey, options)();
+}
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
+
+async function createOne<S extends <%= entity._strings.fieldRequestClass %>>(
+  body: <%= entity._strings.api.createOneBody %>,
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
+): Promise<<%= entity._strings.api.oneResponse %><S>> {
+  const data = { body, fieldRequest };
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'createOne',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity._strings.api.dispatcherClass %>.createOne(data, context).then(toResult);
+  return await unstable_cache(callback, cacheKey, options)();
+}
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
+
+async function updateOne<S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
+  body: <%= entity._strings.api.updateOneBody %>,
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
+): Promise<<%= entity._strings.api.oneResponse %><S>> {
+  const data = { params: toDecoded(params), body, fieldRequest };
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'updateOne',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity._strings.api.dispatcherClass %>.updateOne(data, context).then(toResult);
+  return await unstable_cache(callback, cacheKey, options)();
+}
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasDeleteOne) { -%>
+
+async function deleteOne<S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
+): Promise<<%= entity._strings.api.oneResponse %><S>> {
+  const data = { params: toDecoded(params), fieldRequest };
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'deleteOne',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity._strings.api.dispatcherClass %>.deleteOne(data, context).then(toResult);
+  return await unstable_cache(callback, cacheKey, options)();
+}
+  <%_ } -%>
+
+  <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+  <%_ } -%>
+const <%= `${utils.toPascalCase(entity.name)}CachedServerApiClient` %> = {
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+  search,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  getMany,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOne) { -%>
+  getOne,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
+  getOneSafe,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
+  createOne,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
+  updateOne,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasDeleteOne) { -%>
+  deleteOne,
+  <%_ } -%>
+};
+
+export default <%= `${utils.toPascalCase(entity.name)}CachedServerApiClient` %>;
+<% } -%>

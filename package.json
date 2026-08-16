@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "rm -rf ./lib && tsc -p tsconfig.json",
+    "prepare": "npm run build",
     "test": "rm -rf ./test-project/api-types && rm -rf ./test-project/entities && rm -rf ./test-project/generated && rm -rf ./test-project/services && rm -rf ./test-project/routes.ts && airent"
   },
   "repository": {
@@ -37,11 +38,11 @@
     "express": "^4.22.1"
   },
   "peerDependencies": {
-    "@airent/api": "github:cshaxu/airent-plugins-js#587424510e486dfdc1689837ae508481db0140b7",
+    "@airent/api": "file:../api",
     "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161"
   },
   "devDependencies": {
-    "@airent/api": "github:cshaxu/airent-plugins-js#587424510e486dfdc1689837ae508481db0140b7",
+    "@airent/api": "file:../api",
     "@types/async-lock": "^1.4.2",
     "@types/express": "^4.17.25",
     "@types/node": "^25.5.0",

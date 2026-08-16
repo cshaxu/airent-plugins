@@ -37,11 +37,11 @@
     "express": "^4.22.1"
   },
   "peerDependencies": {
-    "@airent/api": "github:cshaxu/airent-api-js#ee8cea6f134851f3bff4f8b41db04101a765f3b1",
+    "@airent/api": "github:cshaxu/airent-plugins-js#587424510e486dfdc1689837ae508481db0140b7",
     "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161"
   },
   "devDependencies": {
-    "@airent/api": "github:cshaxu/airent-api-js#ee8cea6f134851f3bff4f8b41db04101a765f3b1",
+    "@airent/api": "github:cshaxu/airent-plugins-js#587424510e486dfdc1689837ae508481db0140b7",
     "@types/async-lock": "^1.4.2",
     "@types/express": "^4.17.25",
     "@types/node": "^25.5.0",

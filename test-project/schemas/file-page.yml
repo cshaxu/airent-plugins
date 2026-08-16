@@ -1,0 +1,63 @@
+name: FilePage
+model: FilePageModel
+types:
+  - name: JsonValue
+    define: unknown
+  - name: FilePageModel
+    define: '{ id: string; createdAt: Date; updatedAt: Date; fileId: string; pageId: number; lines: JsonValue; file?: AliasedFileModel; chunks?: FilePageChunkModel[] }'
+keys:
+  - id
+fields:
+  - id: 1
+    name: id
+    type: string
+    strategy: primitive
+    internal: false
+  - id: 2
+    name: createdAt
+    type: Date
+    strategy: primitive
+    internal: false
+  - id: 3
+    name: updatedAt
+    type: Date
+    strategy: primitive
+    internal: false
+  - id: 4
+    name: fileId
+    type: string
+    strategy: primitive
+    internal: false
+  - id: 5
+    name: pageId
+    type: number
+    strategy: primitive
+    internal: false
+  - id: 6
+    name: lines
+    type: JsonValue
+    strategy: primitive
+    cast: true
+    internal: false
+  - id: 7
+    name: file
+    type: AliasedFile
+    strategy: association
+    sourceKeys:
+      - fileId
+    targetKeys:
+      - id
+    isImdb: true
+    internal: false
+  - id: 8
+    name: chunks
+    type: FilePageChunk[]
+    strategy: association
+    sourceKeys:
+      - fileId
+      - pageId
+    targetKeys:
+      - fileId
+      - pageId
+    isImdb: true
+    internal: false

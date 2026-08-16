@@ -1,0 +1,13 @@
+{
+  "type": "commonjs",
+  "schemaPath": "test-project/schemas",
+  "entityPath": "test-project/src/entities",
+  "generatedPath": "test-project/src/generated",
+  "contextImportPath": "./test-project/src/context",
+  "augmentors": ["resources/augmentor.js"],
+  "imdb": {
+    "libImportPath": "./src/index",
+    "imdbImport": "import imdb from '../../imdb';",
+    "imdbBatchSize": 1234
+  }
+}

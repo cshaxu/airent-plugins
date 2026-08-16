@@ -1,0 +1,57 @@
+name: AliasedFile
+model: AliasedFileModel
+types:
+  - name: FileType
+    enum:
+      - PDF
+      - EPUB
+      - TEXT
+  - name: AliasedFileModel
+    define: '{ id: string; size: number; tags: string[]; type: FileType; pages?: FilePageModel[]; chunks?: FilePageChunkModel[] }'
+keys:
+  - id
+fields:
+  - id: 3
+    name: size
+    type: number
+    strategy: primitive
+    internal: false
+  - id: 4
+    name: tags
+    type: string[]
+    strategy: primitive
+    internal: false
+  - id: 5
+    name: type
+    type: FileType
+    strategy: primitive
+    internal: false
+  - id: 6
+    name: pages
+    type: FilePage[]
+    strategy: association
+    sourceKeys:
+      - id
+    targetKeys:
+      - fileId
+    isImdb: true
+    deprecated: true
+    internal: true
+  - id: 1
+    name: id
+    type: string
+    internal: true
+    strategy: primitive
+  - id: 2
+    name: chunks
+    type: FilePageChunk[]
+    strategy: association
+    sourceKeys:
+      - id
+    targetKeys:
+      - fileId
+    isImdb: true
+    orderBy:
+      - pageId: asc
+      - chunkId: desc
+    take: 10

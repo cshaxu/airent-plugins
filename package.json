@@ -1,0 +1,50 @@
+{
+  "name": "@airent/imdb",
+  "version": "0.0.0",
+  "description": "In-memory database extension for Airent 0.2.2",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "bin": {
+    "airent-imdb": "./bin/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "rm -rf ./lib && tsc -p tsconfig.json && crlf --set=LF bin/*",
+    "test": "rm -rf ./test-project/src/generated && airent"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cshaxu/airent-imdb-js.git"
+  },
+  "keywords": [
+    "backend",
+    "data",
+    "database",
+    "entity",
+    "framework",
+    "in-memory",
+    "plugin"
+  ],
+  "author": "cshaxu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cshaxu/airent-imdb-js/issues"
+  },
+  "homepage": "https://github.com/cshaxu/airent-imdb-js#readme",
+  "files": [
+    "bin",
+    "lib",
+    "resources"
+  ],
+  "peerDependencies": {
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161",
+    "crlf": "^1.1.1",
+    "typescript": "^5.9.3"
+  }
+}

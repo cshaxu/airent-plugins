@@ -8,6 +8,8 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "split:dry-run": "node ./scripts/split-packages.js --dry-run"
+    "split:dry-run": "node ./scripts/split-packages.js --dry-run",
+    "update:airent": "node ./scripts/update-airent-js.js",
+    "update:airent:dry-run": "node ./scripts/update-airent-js.js --dry-run"
   }
 }

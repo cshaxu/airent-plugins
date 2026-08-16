@@ -9,6 +9,7 @@ const ROOT = path.resolve(__dirname, "..");
 const PACKAGES_ROOT = path.join(ROOT, "packages");
 const DEPENDENCY_SECTIONS = ["dependencies", "peerDependencies", "devDependencies"];
 const dryRun = process.argv.includes("--dry-run");
+const NPM = process.platform === "win32" ? "npm.cmd" : "npm";
 
 function git(args, options = {}) {
   return cp.execFileSync("git", args, {
@@ -126,10 +127,17 @@ function rewriteInternalDependencies(packageInfo, packagePath, distributionShaBy
 }
 
 function installDistributionLockfile(packagePath) {
-  cp.execFileSync("npm", ["install", "--package-lock-only", "--ignore-scripts", "--workspaces=false"], {
-    cwd: packagePath,
-    stdio: "inherit",
-  });
+  const args = ["install", "--package-lock-only", "--ignore-scripts", "--workspaces=false"];
+  const options = { cwd: packagePath, stdio: "inherit" };
+  if (process.platform === "win32") {
+    cp.execSync([NPM, ...args].join(" "), options);
+  } else {
+    cp.execFileSync(NPM, args, options);
+  }
+}
+
+function hasStagedChanges(packagePath) {
+  return cp.spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: packagePath }).status === 1;
 }
 
 function createDistributionCommit(packageInfo, distributionShaByName, distributionRepository) {
@@ -141,9 +149,11 @@ function createDistributionCommit(packageInfo, distributionShaByName, distributi
     rewriteInternalDependencies(packageInfo, temporaryWorktree, distributionShaByName, distributionRepository);
     installDistributionLockfile(temporaryWorktree);
     git(["add", "--all"], { cwd: temporaryWorktree });
-    git(["commit", "-m", `chore: prepare ${packageInfo.name} distribution`], {
-      cwd: temporaryWorktree,
-    });
+    if (hasStagedChanges(temporaryWorktree)) {
+      git(["commit", "-m", `chore: prepare ${packageInfo.name} distribution`], {
+        cwd: temporaryWorktree,
+      });
+    }
     return git(["rev-parse", "HEAD"], { cwd: temporaryWorktree });
   } finally {
     try {

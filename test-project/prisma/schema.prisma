@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+}
+
+model AliasedFile {
+  id        String          @id
+  createdAt DateTime        @default(now())
+  size      Int
+  tags      String[]
+  type      FileType
+  pages     FilePage[]
+  chunks    FilePageChunk[]
+
+  @@map("File")
+}
+
+model FilePage {
+  id        String          @id @default(cuid())
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  fileId    String
+  pageId    Int
+  lines     Json
+  file      AliasedFile     @relation(fields: [fileId], references: [id])
+  chunks    FilePageChunk[]
+
+  @@unique([fileId, pageId])
+}
+
+model FilePageChunk {
+  id          String      @id @default(cuid())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  fileId      String
+  pageId      Int
+  chunkId     Int
+  startLineId Int
+  endLineId   Int
+  file        AliasedFile @relation(fields: [fileId], references: [id])
+  page        FilePage    @relation(fields: [fileId, pageId], references: [fileId, pageId])
+
+  @@unique([fileId, pageId, chunkId])
+}
+
+enum FileType {
+  PDF
+  EPUB
+  TEXT
+}

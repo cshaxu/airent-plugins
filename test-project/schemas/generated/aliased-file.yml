@@ -1,0 +1,77 @@
+name: AliasedFile
+model: AliasedFileModel
+prisma:
+  tableFields:
+    - id
+    - createdAt
+    - size
+    - tags
+    - type
+    - pages
+    - chunks
+  skipFields:
+    - createdAt
+  internalFields:
+    - pages
+  deprecatedFields:
+    - pages
+    - chunks
+types:
+  - name: PrismaAliasedFile
+    aliasOf: AliasedFile
+    import: '@prisma/client'
+  - name: PrismaFileType
+    aliasOf: FileType
+    import: '@prisma/client'
+  - name: AliasedFileModel
+    define: 'PrismaAliasedFile & { pages?: FilePageModel[]; chunks?: FilePageChunkModel[] }'
+keys:
+  - id
+fields:
+  - id: 3
+    name: size
+    type: number
+    strategy: primitive
+    isPrisma: true
+    internal: false
+  - id: 4
+    name: tags
+    type: string[]
+    strategy: primitive
+    isPrisma: true
+    internal: false
+  - id: 5
+    name: type
+    type: PrismaFileType
+    strategy: primitive
+    isPrisma: true
+    internal: false
+  - id: 6
+    name: pages
+    type: FilePage[]
+    strategy: association
+    sourceKeys:
+      - id
+    targetKeys:
+      - fileId
+    isPrisma: true
+    deprecated: true
+    internal: true
+  - id: 1
+    name: id
+    type: string
+    internal: true
+    strategy: primitive
+  - id: 2
+    name: chunks
+    type: FilePageChunk[]
+    strategy: association
+    sourceKeys:
+      - id
+    targetKeys:
+      - fileId
+    isPrisma: true
+    orderBy:
+      - pageId: asc
+      - chunkId: desc
+    take: 10

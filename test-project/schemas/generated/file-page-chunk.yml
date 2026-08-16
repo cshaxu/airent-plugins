@@ -1,0 +1,93 @@
+name: FilePageChunk
+model: FilePageChunkModel
+prisma:
+  tableFields:
+    - id
+    - createdAt
+    - updatedAt
+    - fileId
+    - pageId
+    - chunkId
+    - startLineId
+    - endLineId
+    - file
+    - page
+types:
+  - name: PrismaFilePageChunk
+    aliasOf: FilePageChunk
+    import: '@prisma/client'
+  - name: FilePageChunkModel
+    define: 'PrismaFilePageChunk & { file?: AliasedFileModel; page?: FilePageModel }'
+keys:
+  - id
+fields:
+  - id: 1
+    name: id
+    type: string
+    strategy: primitive
+    isPrisma: true
+    internal: false
+  - id: 2
+    name: createdAt
+    type: Date
+    strategy: primitive
+    isPrisma: true
+    internal: false
+  - id: 3
+    name: updatedAt
+    type: Date
+    strategy: primitive
+    isPrisma: true
+    internal: false
+  - id: 4
+    name: fileId
+    type: string
+    strategy: primitive
+    isPrisma: true
+    internal: false
+  - id: 5
+    name: pageId
+    type: number
+    strategy: primitive
+    isPrisma: true
+    internal: false
+  - id: 6
+    name: chunkId
+    type: number
+    strategy: primitive
+    isPrisma: true
+    internal: false
+  - id: 7
+    name: startLineId
+    type: number
+    strategy: primitive
+    isPrisma: true
+    internal: false
+  - id: 8
+    name: endLineId
+    type: number
+    strategy: primitive
+    isPrisma: true
+    internal: false
+  - id: 9
+    name: file
+    type: AliasedFile
+    strategy: association
+    sourceKeys:
+      - fileId
+    targetKeys:
+      - id
+    isPrisma: true
+    internal: false
+  - id: 10
+    name: page
+    type: FilePage
+    strategy: association
+    sourceKeys:
+      - fileId
+      - pageId
+    targetKeys:
+      - fileId
+      - pageId
+    isPrisma: true
+    internal: false

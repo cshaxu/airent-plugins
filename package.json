@@ -1,0 +1,50 @@
+{
+  "name": "@airent/prisma",
+  "version": "0.0.0",
+  "description": "Prisma Extension for Airent 0.2.2",
+  "main": "./lib/index.js",
+  "bin": {
+    "airent-prisma": "./bin/index.js"
+  },
+  "scripts": {
+    "build": "rm -rf ./lib && tsc -p tsconfig.json && crlf --set=LF bin/*",
+    "test": "rm -rf ./test-project/schemas/generated && rm -rf ./test-project/src/generated && rm -rf ./test-project/src/entities && node ./bin/index.js generate && airent"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cshaxu/airent-prisma-js.git"
+  },
+  "keywords": [
+    "backend",
+    "data",
+    "entity",
+    "framework",
+    "orm",
+    "plugin",
+    "pojo"
+  ],
+  "author": "cshaxu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cshaxu/airent-prisma-js/issues"
+  },
+  "homepage": "https://github.com/cshaxu/airent-prisma-js#readme",
+  "files": [
+    "bin",
+    "lib",
+    "resources"
+  ],
+  "dependencies": {
+    "@dbml/core": "^6.4.0",
+    "js-yaml": "^4.1.1"
+  },
+  "peerDependencies": {
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161",
+    "crlf": "^1.1.1",
+    "typescript": "^5.9.3"
+  }
+}

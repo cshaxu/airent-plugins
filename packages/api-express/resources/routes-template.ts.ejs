@@ -1,0 +1,35 @@
+<% const handledEntities = Object.values(entityMap).filter(utils.isPresentableEntity).filter((e) => e.api.methods); -%>
+<% if (handledEntities.length > 0) { -%>
+// library imports
+import { Router } from 'express';
+
+// entity imports
+  <%_ handledEntities.forEach((entity) => { -%>
+import <%= `${utils.toPascalCase(entity.name)}Handler` %> from '<%- entity._packages.apiExpress.routesToHandlerFull %>';
+  <%_ }); -%>
+
+const router = Router();
+  <%_ handledEntities.forEach((entity) => { -%>
+
+    <%_ if (entity._booleans.api.hasGetMany) { -%>
+router.post('/get-many-<%= utils.toKababCase(utils.pluralize(entity.name)) %>', <%= `${utils.toPascalCase(entity.name)}Handler` %>.getMany);
+    <%_ } -%>
+    <%_ if (entity._booleans.api.hasGetOne) { -%>
+router.post('/get-one-<%= utils.toKababCase(entity.name) %>', <%= `${utils.toPascalCase(entity.name)}Handler` %>.getOne);
+    <%_ } -%>
+    <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
+router.post('/get-one-<%= utils.toKababCase(entity.name) %>-safe', <%= `${utils.toPascalCase(entity.name)}Handler` %>.getOneSafe);
+    <%_ } -%>
+    <%_ if (entity._booleans.api.hasCreateOne) { -%>
+router.post('/create-one-<%= utils.toKababCase(entity.name) %>', <%= `${utils.toPascalCase(entity.name)}Handler` %>.createOne);
+    <%_ } -%>
+    <%_ if (entity._booleans.api.hasUpdateOne) { -%>
+router.post('/update-one-<%= utils.toKababCase(entity.name) %>', <%= `${utils.toPascalCase(entity.name)}Handler` %>.updateOne);
+    <%_ } -%>
+    <%_ if (entity._booleans.api.hasDeleteOne) { -%>
+router.post('/delete-one-<%= utils.toKababCase(entity.name) %>', <%= `${utils.toPascalCase(entity.name)}Handler` %>.deleteOne);
+    <%_ } -%>
+  <%_ }); -%>
+
+export default router;
+<% } -%>

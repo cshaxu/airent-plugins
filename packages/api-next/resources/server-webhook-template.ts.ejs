@@ -1,0 +1,19 @@
+// airent imports
+import { dispatchWith } from '@airent/api';
+import { handleWith } from '<%- packages.toApiNextLibFull %>';
+
+// config imports
+import { dispatcherConfig } from '<%- packages.toDispatcherConfigFull %>';
+import { handlerConfig } from '<%- packages.toHandlerConfigFull %>';
+
+// function imports
+import { parser, authorizer, executor } from '<%- entry.parsed.sourcePackage %>';
+
+const dispatcher = dispatchWith({
+  ...dispatcherConfig,
+  authorizer,
+  parser,
+  executor,
+});
+
+export const POST = handleWith(dispatcher, handlerConfig);

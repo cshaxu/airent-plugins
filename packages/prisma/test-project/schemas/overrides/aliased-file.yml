@@ -1,0 +1,29 @@
+name: AliasedFile
+aliasOf: File
+prisma:
+  skipFields:
+    - createdAt
+  internalFields:
+    - pages
+  deprecatedFields:
+    - pages
+    - chunks
+fields:
+  - id: 1
+    name: id
+    type: string
+    internal: true
+    strategy: primitive
+  - id: 2
+    name: chunks
+    type: FilePageChunk[]
+    strategy: association
+    sourceKeys:
+      - id
+    targetKeys:
+      - fileId
+    isPrisma: true
+    orderBy:
+      - pageId: asc
+      - chunkId: desc
+    take: 10

@@ -1,0 +1,80 @@
+<%
+function getPluralizedTitleCasedEntityName() {
+  return utils.pluralize(utils.toPascalCase(entity.name));
+}
+
+function getSearchFieldRequestName() {
+  return `Search${getPluralizedTitleCasedEntityName()}FieldRequest`;
+}
+
+function getGetManyFieldRequestName() {
+  return `GetMany${getPluralizedTitleCasedEntityName()}FieldRequest`;
+}
+
+function getGetOneFieldRequestName() {
+  return `GetOne${utils.toPascalCase(entity.name)}FieldRequest`;
+}
+-%>
+<% if (entity._booleans.api.hasSearch || entity._booleans.api.hasGetMany || entity._booleans.api.hasGetOne || entity._booleans.api.hasGetOneSafe) { -%>
+// entity imports
+import <%= `${utils.toPascalCase(entity.name)}ServerApiClient` %> from '<%- entity._packages.apiNextTanstack.hookToServerClientFull %>';
+import {
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+  <%= `buildSearch${getPluralizedTitleCasedEntityName()}QueryWith` %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  <%= `buildGetMany${getPluralizedTitleCasedEntityName()}QueryWith` %>,
+    <%_ entity.fields.filter((f) => f._strings.api.minVar || f._strings.api.maxVar).forEach((field) => { -%>
+      <%_ if (field._strings.api.maxVar) { -%>
+  <%= `buildGetManyPageBy${utils.toPascalCase(field.name)}AscQueryWith` %>,
+      <%_ } -%>
+      <%_ if (field._strings.api.minVar) { -%>
+  <%= `buildGetManyPageBy${utils.toPascalCase(field.name)}DescQueryWith` %>,
+      <%_ } -%>
+    <%_ }); -%>
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOne) { -%>
+  <%= `buildGetOne${utils.toPascalCase(entity.name)}QueryWith` %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
+  <%= `buildGetOne${utils.toPascalCase(entity.name)}SafeQueryWith` %>,
+  <%_ } -%>
+} from './<%= `${utils.toKababCase(entity.name)}-base${utils.getModuleSuffix(config)}` %>';
+import {
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+<%= getSearchFieldRequestName() %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+<%= getGetManyFieldRequestName() %>,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOne || entity._booleans.api.hasGetOneSafe || entity._booleans.api.hasCreateOne || entity._booleans.api.hasUpdateOne) { -%>
+<%= getGetOneFieldRequestName() %>,
+  <%_ } -%>
+} from '<%- config._packages.apiNextTanstack.fieldRequestsImportPath %>';
+
+  <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+  <%_ } -%>
+export const <%= `${utils.toPascalCase(entity.name)}ServerQueries` %> = {
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+  search: <%= `buildSearch${getPluralizedTitleCasedEntityName()}QueryWith` %>(<%= `${utils.toPascalCase(entity.name)}ServerApiClient` %>.search, <%= getSearchFieldRequestName() %>),
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  getMany: <%= `buildGetMany${getPluralizedTitleCasedEntityName()}QueryWith` %>(<%= `${utils.toPascalCase(entity.name)}ServerApiClient` %>.getMany, <%= getGetManyFieldRequestName() %>),
+    <%_ entity.fields.filter((f) => f._strings.api.minVar || f._strings.api.maxVar).forEach((field) => { -%>
+      <%_ if (field._strings.api.maxVar) { -%>
+  <%= `getManyPageBy${utils.toPascalCase(field.name)}Asc` %>: <%= `buildGetManyPageBy${utils.toPascalCase(field.name)}AscQueryWith` %>(<%= `${utils.toPascalCase(entity.name)}ServerApiClient` %>.getMany, <%= getGetManyFieldRequestName() %>),
+      <%_ } -%>
+      <%_ if (field._strings.api.minVar) { -%>
+  <%= `getManyPageBy${utils.toPascalCase(field.name)}Desc` %>: <%= `buildGetManyPageBy${utils.toPascalCase(field.name)}DescQueryWith` %>(<%= `${utils.toPascalCase(entity.name)}ServerApiClient` %>.getMany, <%= getGetManyFieldRequestName() %>),
+      <%_ } -%>
+    <%_ }); -%>
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOne) { -%>
+  getOne: <%- `buildGetOne${utils.toPascalCase(entity.name)}QueryWith` %>(<%= `${utils.toPascalCase(entity.name)}ServerApiClient` %>.getOne, <%= getGetOneFieldRequestName() %>),
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
+  getOneSafe: <%- `buildGetOne${utils.toPascalCase(entity.name)}SafeQueryWith` %>(<%= `${utils.toPascalCase(entity.name)}ServerApiClient` %>.getOneSafe, <%= getGetOneFieldRequestName() %>),
+  <%_ } -%>
+};
+<% } -%>

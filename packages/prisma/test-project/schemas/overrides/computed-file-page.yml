@@ -1,0 +1,28 @@
+name: ComputedFilePage
+model: ComputedFilePage
+isPrisma: false
+keys:
+  - fileId
+  - pageId
+types:
+  - name: ComputedFilePage
+    define: '{ fileId: string; pageId: number }'
+fields:
+  - id: 1
+    name: fileId
+    type: string
+    strategy: primitive
+  - id: 2
+    name: pageId
+    type: number
+    strategy: primitive
+  - id: 3
+    name: filePage
+    type: FilePage
+    strategy: association
+    sourceKeys:
+      - fileId
+      - pageId
+    targetKeys:
+      - fileId
+      - pageId

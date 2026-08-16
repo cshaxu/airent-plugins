@@ -1,0 +1,35 @@
+name: Split plugin packages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/**'
+      - '.github/workflows/split-packages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create package-root branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          packages=(api api-express api-next api-next-tanstack imdb prisma)
+
+          for package in "${packages[@]}"; do
+            branch="split/${package}"
+            commit="$(git subtree split --prefix="packages/${package}")"
+            git branch -f "${branch}" "${commit}"
+            git push origin "${branch}" --force
+            echo "${package}: ${commit}"
+          done

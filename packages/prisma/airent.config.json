@@ -1,0 +1,17 @@
+{
+  "type": "commonjs",
+  "schemaPath": "test-project/schemas/generated",
+  "entityPath": "test-project/src/entities",
+  "generatedPath": "test-project/src/generated",
+  "contextImportPath": "./test-project/src/context",
+  "augmentors": ["resources/augmentor.js"],
+  "prisma": {
+    "libImportPath": "./src/index",
+    "prismaSchemaPath": "test-project/prisma",
+    "extensionSchemaPath": "test-project/schemas/overrides",
+    "prismaImport": "import prisma from '../../prisma';",
+    "prismaBatchSize": 1234,
+    "primitiveFields": "external",
+    "associationFields": "external"
+  }
+}

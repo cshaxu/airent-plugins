@@ -1,0 +1,74 @@
+<%
+function getDispatcherPackage() {
+  return `${utils.toKababCase(entity.name)}-dispatcher${utils.getModuleSuffix(config)}`;
+}
+-%>
+<% if (utils.isPresentableEntity(entity) && entity._booleans.api.hasAny) { -%>
+// airent imports
+import { handleWith, jsonRequestParser } from '<%- config._packages.apiNext.handlerToLibFull %>';
+
+// config imports
+import { handlerConfig as handlerConfigRaw } from '<%- config._packages.apiNext.handlerToHandlerConfigFull %>';
+
+// entity imports
+import <%= entity._strings.api.dispatcherClass %> from '<%- entity._packages.apiNext.handlerToDispatcherFull %>';
+
+const handlerConfig = { ...handlerConfigRaw, requestParser: jsonRequestParser };
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+
+const search = handleWith(<%= entity._strings.api.dispatcherClass %>.search, handlerConfig);
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+
+const getMany = handleWith(<%= entity._strings.api.dispatcherClass %>.getMany, handlerConfig);
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOne) { -%>
+
+const getOne = handleWith(<%= entity._strings.api.dispatcherClass %>.getOne, handlerConfig);
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
+
+const getOneSafe = handleWith(<%= entity._strings.api.dispatcherClass %>.getOneSafe, handlerConfig);
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
+
+const createOne = handleWith(<%= entity._strings.api.dispatcherClass %>.createOne, handlerConfig);
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
+
+const updateOne = handleWith(<%= entity._strings.api.dispatcherClass %>.updateOne, handlerConfig);
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasDeleteOne) { -%>
+
+const deleteOne = handleWith(<%= entity._strings.api.dispatcherClass %>.deleteOne, handlerConfig);
+  <%_ } -%>
+
+  <%_ if (entity.deprecated) { -%>
+/** @deprecated */
+  <%_ } -%>
+const <%= `${utils.toPascalCase(entity.name)}Handler` %> = {
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+  search,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  getMany,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOne) { -%>
+  getOne,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
+  getOneSafe,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
+  createOne,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
+  updateOne,
+  <%_ } -%>
+  <%_ if (entity._booleans.api.hasDeleteOne) { -%>
+  deleteOne,
+  <%_ } -%>
+};
+
+export default <%= `${utils.toPascalCase(entity.name)}Handler` %>;
+<% } -%>

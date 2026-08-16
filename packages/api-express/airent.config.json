@@ -1,0 +1,73 @@
+{
+  "type": "module",
+  "schemaPath": "test-project/schemas",
+  "entityPath": "test-project/src/entities",
+  "generatedPath": "test-project/src/generated",
+  "contextImportPath": "./test-project/src/context",
+  "augmentors": [
+    "node_modules/@airent/api/resources/augmentor.js",
+    "resources/augmentor.js"
+  ],
+  "templates": [
+    {
+      "name": "node_modules/@airent/api/resources/dispatcher-template.ts.ejs",
+      "outputPath": "{generatedPath}/dispatchers/{kababEntityName}.ts",
+      "skippable": false
+    },
+    {
+      "name": "node_modules/@airent/api/resources/actions-template.ts.ejs",
+      "outputPath": "{generatedPath}/actions/{kababEntityName}.ts",
+      "skippable": false
+    },
+    {
+      "name": "node_modules/@airent/api/resources/service-interface-template.ts.ejs",
+      "outputPath": "{generatedPath}/services/{kababEntityName}.ts",
+      "skippable": false
+    },
+    {
+      "name": "node_modules/@airent/api/resources/service-template.ts.ejs",
+      "outputPath": "{api.server.servicePath}/{kababEntityName}.ts",
+      "skippable": true
+    },
+    {
+      "name": "node_modules/@airent/api/resources/client-template.ts.ejs",
+      "outputPath": "{generatedPath}/clients/{kababEntityName}.ts",
+      "skippable": false
+    },
+    {
+      "name": "node_modules/@airent/api/resources/search-service-template.ts.ejs",
+      "outputPath": "{api.server.servicePath}/{kababEntityName}-search.ts",
+      "skippable": true
+    },
+    {
+      "name": "resources/handler-template.ts.ejs",
+      "outputPath": "{generatedPath}/handlers/{kababEntityName}.ts",
+      "skippable": false
+    },
+    {
+      "name": "resources/routes-template.ts.ejs",
+      "outputPath": "{apiExpress.routesFilePath}",
+      "skippable": false
+    },
+    {
+      "name": "node_modules/@airent/api/resources/type-template.ts.ejs",
+      "outputPath": "{api.typesPath}/{kababEntityName}.ts",
+      "skippable": true
+    }
+  ],
+  "api": {
+    "typesPath": "test-project/src/api-types",
+    "server": {
+      "servicePath": "test-project/src/services",
+      "dispatcherConfigImportPath": "./test-project/src/framework"
+    },
+    "client": {
+      "baseUrlImportPath": "./test-project/src/config"
+    }
+  },
+  "apiExpress": {
+    "libImportPath": "./src/index",
+    "handlerConfigImportPath": "./test-project/src/framework",
+    "routesFilePath": "test-project/src/routes.ts"
+  }
+}

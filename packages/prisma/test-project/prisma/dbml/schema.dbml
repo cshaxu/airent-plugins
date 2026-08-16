@@ -1,0 +1,57 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table File {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  size Int [not null]
+  tags String[] [not null]
+  type FileType [not null]
+  pages FilePage [not null]
+  chunks FilePageChunk [not null]
+}
+
+Table FilePage {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  fileId String [not null]
+  pageId Int [not null]
+  lines Json [not null]
+  file File [not null]
+  chunks FilePageChunk [not null]
+
+  indexes {
+    (fileId, pageId) [unique]
+  }
+}
+
+Table FilePageChunk {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  fileId String [not null]
+  pageId Int [not null]
+  chunkId Int [not null]
+  startLineId Int [not null]
+  endLineId Int [not null]
+  file File [not null]
+  page FilePage [not null]
+
+  indexes {
+    (fileId, pageId, chunkId) [unique]
+  }
+}
+
+Enum FileType {
+  PDF
+  EPUB
+  TEXT
+}
+
+Ref: FilePage.fileId > File.id
+
+Ref: FilePageChunk.fileId > File.id
+
+Ref: FilePageChunk.(fileId, pageId) > FilePage.(fileId, pageId)
